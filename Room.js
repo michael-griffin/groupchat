@@ -68,11 +68,37 @@ class Room {
     }
   }
 
-  private(data, member){
+
+  updateUser(newName, user) {
+    for (let member of this.members) {
+      if (member.name === user.name) {
+        this.broadcast({
+          type: "note",
+          text: `${member.name} has changed name to ${newName}`
+        });
+        member.name = newName;
+      }
+    }
+  }
+
+  findUser(username) {
+    for (let member of this.members) {
+      if (member.name === username) {
+        return member;
+      }
+    }
+  }
+
+  privateJoke(data, member) {
     member.send(JSON.stringify(data));
   }
 
-  listMembers(member){
+  privateMsg(data, member) {
+    const user = this.findUser(member);
+    user.send(JSON.stringify(data));
+  }
+
+  listMembers(member) {
     let membersMsg = Array.from(this.members).map(member => member.name);
     console.log('memberMsg is: ', membersMsg);
     let msgStrings = "In room: " + membersMsg.join(", ");
@@ -80,7 +106,7 @@ class Room {
       name: this.name,
       type: "chat",
       text: msgStrings,
-    }
+    };
 
     member.send(JSON.stringify(data));
   }

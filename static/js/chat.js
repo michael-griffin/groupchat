@@ -60,10 +60,18 @@ $("form").submit(function (evt) {
   evt.preventDefault();
 
   let data = { type: "chat", text: $("#m").val() };
-  if (data.text === "/joke"){
+
+  let testPriv = /^\/priv/;
+  let testName = /^\/name/;
+
+  if (data.text === "/joke") {
     data.type = "get-joke";
-  } else if (data.text === "/members"){
+  } else if (data.text === "/members") {
     data.type = "get-members";
+  } else if (data.text.match(testPriv)) {
+    data.type = "private-chat";
+  } else if (data.text.match(testName)) {
+    data.type = "name-change";
   }
 
   ws.send(JSON.stringify(data));

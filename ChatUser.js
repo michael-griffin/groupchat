@@ -79,17 +79,44 @@ class ChatUser {
     else if (msg.type === "get-joke") this.handleJoke();
     else if (msg.type === "get-members") this.handleList();
     else if (msg.type === "chat") this.handleChat(msg.text);
+    else if (msg.type === "private-chat") this.handlePriv(msg.text);
+    else if (msg.type === "name-change") this.handleNameChange(msg.text);
     else throw new Error(`bad message: ${msg.type}`);
   }
 
-  handleList(){
+  handleNameChange(text) {
+    const [cmd, newName] = text.split(" ");
+
+    this.room.updateUser(newName, this)
+
+
+  }
+
+
+  handlePriv(text) {
+    const [cmd, user, ...msg] = text.split(" ");
+
+    const message = msg.join(" ");
+
+    const data = {
+      name: this.name,
+      type: "chat",
+      text: message,
+    };
+
+
+
+    this.room.privateMsg(data, user);
+  }
+
+  handleList() {
     this.room.listMembers(this);
   }
 
-  async handleJoke(){
+  async handleJoke() {
 
     let resp = await fetch('https://icanhazdadjoke.com/', {
-      headers: {"Accept" : "application/json"}
+      headers: { "Accept": "application/json" }
     });
     let parsed = await resp.json();
     let dadJoke = parsed.joke;
