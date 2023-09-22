@@ -67,6 +67,23 @@ class Room {
       member.send(JSON.stringify(data));
     }
   }
+
+  private(data, member){
+    member.send(JSON.stringify(data));
+  }
+
+  listMembers(member){
+    let membersMsg = Array.from(this.members).map(member => member.name);
+    console.log('memberMsg is: ', membersMsg);
+    let msgStrings = "In room: " + membersMsg.join(", ");
+    let data = {
+      name: this.name,
+      type: "chat",
+      text: msgStrings,
+    }
+
+    member.send(JSON.stringify(data));
+  }
 }
 
 module.exports = Room;

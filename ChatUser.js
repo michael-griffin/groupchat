@@ -76,10 +76,33 @@ class ChatUser {
     let msg = JSON.parse(jsonData);
 
     if (msg.type === "join") this.handleJoin(msg.name);
+    else if (msg.type === "get-joke") this.handleJoke();
+    else if (msg.type === "get-members") this.handleList();
     else if (msg.type === "chat") this.handleChat(msg.text);
     else throw new Error(`bad message: ${msg.type}`);
   }
 
+  handleList(){
+    this.room.listMembers(this);
+  }
+
+  async handleJoke(){
+
+    let resp = await fetch('https://icanhazdadjoke.com/', {
+      headers: {"Accept" : "application/json"}
+    });
+    let parsed = await resp.json();
+    let dadJoke = parsed.joke;
+    console.log(parsed);
+
+    // let simpleJoke = `I hired a lawyer to sue the airlines for mishandling my luggage
+    // They lost the case`;
+    this.room.private({
+      name: this.name,
+      type: "chat",
+      text: dadJoke,
+    }, this);
+  }
   /** Connection was closed: leave room, announce exit to others. */
 
   handleClose() {
